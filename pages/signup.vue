@@ -14,19 +14,14 @@ async function handleSignup() {
   loading.value = true
   
   try {
-    const response = await useFetch('/api/auth/signup', {
+    await $fetch('/api/auth/signup', {
       method: 'POST',
       body: { email: email.value, password: password.value, name: name.value }
     })
     
-    if (response.error.value) {
-      error.value = response.error.value.data?.message || 'Signup failed'
-      return
-    }
-    
     await navigateTo('/')
-  } catch (e) {
-    error.value = 'An error occurred'
+  } catch (e: any) {
+    error.value = e.data?.message || 'Signup failed'
   } finally {
     loading.value = false
   }

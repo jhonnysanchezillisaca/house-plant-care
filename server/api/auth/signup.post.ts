@@ -11,16 +11,16 @@ const bodySchema = z.object({
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const parsed = bodySchema.safeParse(body)
-  
+
   if (!parsed.success) {
     throw createError({
       statusCode: 400,
       message: 'Invalid input'
     })
   }
-  
+
   const { email, password, name } = parsed.data
-  
+
   const existingUser = await getUserByEmail(email)
   if (existingUser) {
     throw createError({
@@ -28,11 +28,11 @@ export default defineEventHandler(async (event) => {
       message: 'Email already registered'
     })
   }
-  
+
   const user = await createUser(email, password, name)
-  
+
   await setSessionUser(event, user.id)
-  
+
   return {
     user: {
       id: user.id,

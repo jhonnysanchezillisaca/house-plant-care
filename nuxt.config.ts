@@ -8,6 +8,9 @@ export default defineNuxtConfig({
       external: ['better-sqlite3']
     }
   },
+  routeRules: {
+    '/**': { cache: { maxAge: 0 } }
+  },
   tailwindcss: {
     cssPath: '~/assets/main.css',
     configPath: 'tailwind.config.ts'

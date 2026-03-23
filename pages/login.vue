@@ -13,19 +13,14 @@ async function handleLogin() {
   loading.value = true
   
   try {
-    const response = await useFetch('/api/auth/login', {
+    await $fetch('/api/auth/login', {
       method: 'POST',
       body: { email: email.value, password: password.value }
     })
     
-    if (response.error.value) {
-      error.value = response.error.value.data?.message || 'Login failed'
-      return
-    }
-    
     await navigateTo('/')
-  } catch (e) {
-    error.value = 'An error occurred'
+  } catch (e: any) {
+    error.value = e.data?.message || 'Login failed'
   } finally {
     loading.value = false
   }
