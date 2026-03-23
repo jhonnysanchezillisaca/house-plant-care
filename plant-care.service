@@ -1,0 +1,18 @@
+[Unit]
+Description=House Plant Care
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/plant-care
+Environment="NODE_ENV=production"
+Environment="NUXT_HOST=0.0.0.0"
+Environment="NUXT_PORT=3000"
+Environment="NUXT_SESSION_PASSWORD=CHANGE_ME_TO_A_SECURE_RANDOM_STRING"
+ExecStart=/usr/bin/node .output/server/index.mjs
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

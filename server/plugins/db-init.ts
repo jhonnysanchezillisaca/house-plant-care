@@ -1,9 +1,20 @@
 import Database from 'better-sqlite3'
 import { join } from 'path'
+import { existsSync, mkdirSync } from 'fs'
 import { defaultCareTypes } from '../db/schema'
 
-export default defineNitroPlugin(async () => {
+export default defineNitroPlugin(() => {
   const dbPath = join(process.cwd(), 'data', 'db.sqlite')
+  const uploadsPath = join(process.cwd(), 'public', 'uploads')
+  
+  if (!existsSync(join(process.cwd(), 'data'))) {
+    mkdirSync(join(process.cwd(), 'data'), { recursive: true })
+  }
+  
+  if (!existsSync(uploadsPath)) {
+    mkdirSync(uploadsPath, { recursive: true })
+  }
+  
   const sqlite = new Database(dbPath)
   
   sqlite.exec(`
@@ -63,7 +74,6 @@ export default defineNitroPlugin(async () => {
     for (const ct of defaultCareTypes) {
       insert.run(ct.name, ct.icon)
     }
-    console.log('Seeded default care types')
   }
   
   sqlite.close()
