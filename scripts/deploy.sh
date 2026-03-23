@@ -11,7 +11,7 @@ echo "Pulling latest code..."
 git pull
 
 echo "Cleaning old build..."
-rm -rf .output .nuxt
+rm -rf .output .nuxt node_modules/.cache
 
 echo "Installing dependencies..."
 npm ci
@@ -32,6 +32,7 @@ npm install better-sqlite3
 cd ../..
 
 echo "Restarting service..."
-pm2 restart plant-care 2>/dev/null || systemctl restart plant-care 2>/dev/null || true
+pm2 delete house-plant-care 2>/dev/null || true
+pm2 start ecosystem.config.cjs --env production
 
 echo "✅ Deploy complete!"

@@ -15,12 +15,12 @@ if command -v pm2 &> /dev/null; then
   pm2 list
   echo ""
   
-  # Check if plant-care is running
-  if pm2 list | grep -q "plant-care.*online"; then
+  # Check if house-plant-care is running
+  if pm2 list | grep -q "house-plant-care.*online"; then
     echo "✅ Application is running"
     echo ""
     echo "Status details:"
-    pm2 show plant-care
+    pm2 show house-plant-care
   else
     echo "⚠️  Application is not running"
     echo ""
@@ -30,11 +30,11 @@ else
   echo "PM2 not found."
   
   # Check systemd
-  if systemctl is-active --quiet plant-care 2>/dev/null; then
+  if systemctl is-active --quiet house-plant-care 2>/dev/null; then
     echo "=== Systemd Status ==="
-    systemctl status plant-care --no-pager
+    systemctl status house-plant-care --no-pager
   else
-    echo "Systemd service 'plant-care' not found."
+    echo "Systemd service 'house-plant-care' not found."
   fi
 fi
 

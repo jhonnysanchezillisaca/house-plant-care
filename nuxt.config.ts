@@ -6,7 +6,15 @@ export default defineNuxtConfig({
     preset: 'node-server',
     externals: process.env.NODE_ENV === 'production' 
       ? { external: ['better-sqlite3'] }
-      : {}
+      : {},
+    cache: false
+  },
+  routeRules: {
+    '/**': {
+      cache: false,
+      swr: false,
+      static: false
+    }
   },
   experimental: {
     manifest: false
