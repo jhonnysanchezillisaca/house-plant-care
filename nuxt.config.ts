@@ -4,12 +4,12 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss'],
   nitro: {
     preset: 'node-server',
-    externals: {
-      external: ['better-sqlite3']
-    }
+    externals: process.env.NODE_ENV === 'production' 
+      ? { external: ['better-sqlite3'] }
+      : {}
   },
-  routeRules: {
-    '/**': { cache: { maxAge: 0 } }
+  experimental: {
+    manifest: false
   },
   tailwindcss: {
     cssPath: '~/assets/main.css',
