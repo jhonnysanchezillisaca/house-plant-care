@@ -14,58 +14,81 @@ A self-hosted application to manage the care of your house plants.
 - **Overdue alerts** - Dashboard shows plants needing attention
 - **Mobile-friendly** - Responsive design works on all devices
 
+## Requirements
+
+- Node.js 20.19+ or Node.js 22 LTS
+- npm 9+
+
+## Quick Start
+
+### Initial Setup (Proxmox LXC / Linux Server)
+
+```bash
+# Download and run setup script
+curl -fsSL https://raw.githubusercontent.com/YOUR_REPO/main/scripts/setup.sh | bash
+
+# Or manually:
+git clone https://github.com/YOUR_REPO.git /opt/plant-care
+cd /opt/plant-care
+./scripts/setup.sh
+```
+
+The setup script will:
+1. Install Node.js 22 LTS
+2. Clone the repository
+3. Create `.env` file (you need to edit it!)
+4. Build the application
+5. Start with PM2
+
+### Configure Environment
+
+```bash
+nano /opt/plant-care/.env
+```
+
+Set required variables:
+```env
+NUXT_SESSION_PASSWORD=your-secure-random-string-min-32-characters
+TREFLE_API_TOKEN=your-trefle-token  # Optional
+```
+
+### Deploy Updates
+
+```bash
+cd /opt/plant-care
+git pull
+npm run deploy
+pm2 restart plant-care
+```
+
+That's it! Just `git pull` + `npm run deploy` + restart.
+
 ## Deployment Options
 
-### Option 1: Proxmox LXC with Node.js (Most Efficient)
-
-**Resource usage:** ~50-100MB RAM
+### Option 1: Proxmox LXC (Recommended - 50-100MB RAM)
 
 ```bash
-# In your LXC container (Ubuntu 22.04 or Debian 12)
-apt update && apt install -y nodejs npm git
+# One-time setup
+./scripts/setup.sh
 
-# Clone and setup
-git clone <repository-url> /opt/plant-care
-cd /opt/plant-care
-npm ci --production
-npm run build
-
-# Create environment file
-cp .env.example .env
-nano .env  # Set NUXT_SESSION_PASSWORD
-
-# Create directories
-mkdir -p data public/uploads
-
-# Install PM2
-npm install -g pm2
-pm2 start ecosystem.config.cjs
-pm2 save
-pm2 startup
+# Updates
+git pull && npm run deploy && pm2 restart plant-care
 ```
 
-**Using systemd service instead:**
-```bash
-cp plant-care.service /etc/systemd/system/
-systemctl daemon-reload
-systemctl enable plant-care
-systemctl start plant-care
-```
-
-### Option 2: Docker Compose
-
-**Resource usage:** ~200-400MB RAM (includes Docker overhead)
+### Option 2: Docker Compose (200-400MB RAM)
 
 ```bash
 docker-compose up -d
 ```
 
-### Option 3: Manual Build
+### Option 3: Manual
 
 ```bash
-npm install
+npm install --production --ignore-scripts
+npm install esbuild --save-dev
 npm run build
-NODE_ENV=production NUXT_SESSION_PASSWORD=your-secret node .output/server/index.mjs
+npm prune --production
+node .output/server/index.mjs
 ```
 
 ## Environment Variables
@@ -74,10 +97,8 @@ NODE_ENV=production NUXT_SESSION_PASSWORD=your-secret node .output/server/index.
 |----------|----------|-------------|
 | `NUXT_SESSION_PASSWORD` | Yes | Session encryption key (min 32 chars) |
 | `TREFLE_API_TOKEN` | No | [Trefle API](https://trefle.io) token for species lookup |
-| `NUXT_HOST` | No | Server host (default: 0.0.0.0) |
-| `NUXT_PORT` | No | Server port (default: 3000) |
 
-## Reverse Proxy Setup
+## Reverse Proxy
 
 ### Caddy (Recommended)
 ```bash
@@ -95,14 +116,12 @@ systemctl restart caddy
 server {
     listen 80;
     server_name your-domain.com;
-    
     location / {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
     }
 }
 ```
@@ -114,12 +133,15 @@ npm install
 npm run dev
 ```
 
-## Data Storage
+## Data Backup
 
-- **SQLite database**: `./data/db.sqlite`
-- **Uploaded photos**: `./public/uploads/`
+Backup these directories regularly:
+- `data/` - SQLite database
+- `public/uploads/` - Uploaded photos
 
-**Backup these directories regularly!**
+## Care Types
+
+💧 Water | 🧪 Fertilize | 🌫️ Mist | ✂️ Prune | 🪴 Repot | 👁️ Check | 🔄 Rotate | ✨ Clean Leaves | 🌱 Propagate
 
 ## License
 
