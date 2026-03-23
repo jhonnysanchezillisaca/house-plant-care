@@ -3,7 +3,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss'],
   nitro: {
-    preset: 'node-server'
+    preset: 'node-server',
+    externals: {
+      external: ['better-sqlite3']
+    }
   },
   tailwindcss: {
     cssPath: '~/assets/main.css',
