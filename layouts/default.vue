@@ -1,21 +1,5 @@
 <script setup lang="ts">
 const user = await useFetch('/api/user')
-const showNav = ref(true)
-const isMobile = ref(false)
-
-function checkMobile() {
-  isMobile.value = window.innerWidth < 768
-  showNav.value = !isMobile.value || false
-}
-
-onMounted(() => {
-  checkMobile()
-  window.addEventListener('resize', checkMobile)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', checkMobile)
-})
 
 async function handleLogout() {
   await useFetch('/api/auth/logout', { method: 'POST' })
@@ -32,6 +16,29 @@ async function handleLogout() {
             <NuxtLink to="/" class="text-xl font-bold text-gray-900">
               🌱 Plant Care
             </NuxtLink>
+            <div class="hidden md:flex md:ml-8 md:gap-4">
+              <NuxtLink 
+                to="/" 
+                class="text-gray-600 hover:text-gray-900 px-3 py-2"
+                active-class="text-green-600"
+              >
+                Dashboard
+              </NuxtLink>
+              <NuxtLink 
+                to="/rooms" 
+                class="text-gray-600 hover:text-gray-900 px-3 py-2"
+                active-class="text-green-600"
+              >
+                Rooms
+              </NuxtLink>
+              <NuxtLink 
+                to="/plants" 
+                class="text-gray-600 hover:text-gray-900 px-3 py-2"
+                active-class="text-green-600"
+              >
+                Plants
+              </NuxtLink>
+            </div>
           </div>
           
           <div v-if="user.data.value" class="flex items-center gap-4">
@@ -43,6 +50,32 @@ async function handleLogout() {
               Logout
             </button>
           </div>
+        </div>
+      </div>
+      
+      <div class="md:hidden border-t">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+          <NuxtLink 
+            to="/" 
+            class="block px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-md"
+            active-class="bg-gray-100 text-green-600"
+          >
+            Dashboard
+          </NuxtLink>
+          <NuxtLink 
+            to="/rooms" 
+            class="block px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-md"
+            active-class="bg-gray-100 text-green-600"
+          >
+            Rooms
+          </NuxtLink>
+          <NuxtLink 
+            to="/plants" 
+            class="block px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-md"
+            active-class="bg-gray-100 text-green-600"
+          >
+            Plants
+          </NuxtLink>
         </div>
       </div>
     </nav>
