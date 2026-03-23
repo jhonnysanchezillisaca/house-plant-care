@@ -15,7 +15,8 @@ export default defineEventHandler(async (event) => {
     return { data: [] }
   }
   
-  const token = process.env.TREFLE_API_TOKEN
+  const config = useRuntimeConfig(event)
+  const token = config.trefleApiToken || process.env.TREFLE_API_TOKEN
   
   if (!token) {
     return { 

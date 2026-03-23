@@ -11,6 +11,9 @@ export default defineNuxtConfig({
   experimental: {
     manifest: false
   },
+  runtimeConfig: {
+    trefleApiToken: process.env.TREFLE_API_TOKEN
+  },
   tailwindcss: {
     cssPath: '~/assets/main.css',
     configPath: 'tailwind.config.ts'

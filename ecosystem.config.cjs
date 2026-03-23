@@ -6,6 +6,7 @@ module.exports = {
     autorestart: true,
     watch: false,
     max_memory_restart: '300M',
+    env_file: '.env',
     env: {
       NODE_ENV: 'production',
       NUXT_HOST: '0.0.0.0',
