@@ -4,5 +4,9 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss'],
   nitro: {
     preset: 'node-server'
+  },
+  tailwindcss: {
+    cssPath: '~/assets/main.css',
+    configPath: 'tailwind.config.ts'
   }
 })

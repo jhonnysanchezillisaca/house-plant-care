@@ -5,46 +5,43 @@ echo "🌿 House Plant Care - Initial Setup"
 echo "==================================="
 echo ""
 
-if [ "$EUID" -eq 0 ]; then
-  echo "Running as root is fine for setup."
-fi
-
 INSTALL_DIR="${1:-/opt/plant-care}"
 
-echo "This will install House Plant Care to: $INSTALL_DIR"
-echo ""
-read -p "Continue? [y/N] " -n 1 -r
-echo ""
+# Check Node version
+NODE_MAJOR=$(node -e "console.log(process.versions.node.split('.')[0])" 2>/dev/null || echo "0")
 
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-  echo "Aborted."
-  exit 1
+if [ "$NODE_MAJOR" -lt 22 ]; then
+  echo "⚠️  Node.js 22+ is required (found: $(node -v 2>/dev/null || 'none'))"
+  echo ""
+  echo "Installing Node.js 22..."
+  curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+  apt install -y nodejs
+  echo ""
 fi
 
+echo "Node version: $(node --version)"
+echo "npm version: $(npm --version)"
 echo ""
-echo "Installing Node.js 22..."
-curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
-apt install -y nodejs
 
-echo "Checking Node version..."
-node --version
-npm --version
-
-echo ""
-echo "Creating application directory..."
-mkdir -p "$INSTALL_DIR"
-cd "$INSTALL_DIR"
-
-echo ""
-echo "Cloning repository..."
-if [ -d ".git" ]; then
-  echo "Already a git repository, pulling latest..."
+if [ -d "$INSTALL_DIR/.git" ]; then
+  echo "Updating existing installation..."
+  cd "$INSTALL_DIR"
   git pull
 else
   echo "Enter the git repository URL:"
   read -r REPO_URL
-  git clone "$REPO_URL" .
+  echo "Cloning repository..."
+  git clone "$REPO_URL" "$INSTALL_DIR"
+  cd "$INSTALL_DIR"
 fi
+
+echo ""
+echo "Installing dependencies..."
+npm ci
+
+echo ""
+echo "Building application..."
+npm run build
 
 echo ""
 echo "Creating environment file..."
@@ -61,12 +58,6 @@ echo "Creating data directories..."
 mkdir -p data public/uploads
 
 echo ""
-echo "Building application (this may take a few minutes)..."
-npm install --production --ignore-scripts
-npm install esbuild --save-dev
-npm run build
-
-echo ""
 echo "Installing PM2..."
 npm install -g pm2
 
@@ -81,10 +72,10 @@ echo "✅ Setup complete!"
 echo ""
 echo "The app is running at: http://localhost:3000"
 echo ""
-echo "Next steps:"
-echo "1. Edit .env: nano $INSTALL_DIR/.env"
-echo "2. Restart: pm2 restart plant-care"
-echo "3. Set up reverse proxy (Caddy/Nginx)"
+echo "Commands:"
+echo "  pm2 status          - Check status"
+echo "  pm2 logs plant-care - View logs"
+echo "  pm2 restart plant-care - Restart"
 echo ""
-echo "To update in the future:"
-echo "  cd $INSTALL_DIR && git pull && npm run deploy && pm2 restart plant-care"
+echo "To update:"
+echo "  cd $INSTALL_DIR && git pull && npm ci && npm run build && pm2 restart plant-care"

@@ -5,28 +5,18 @@ echo "🌿 House Plant Care - Deploy"
 echo "============================"
 
 INSTALL_DIR="/opt/plant-care"
-
-cd $INSTALL_DIR
+cd "$INSTALL_DIR"
 
 echo "Pulling latest code..."
-git pull origin main
-
-echo "Cleaning previous build..."
-rm -rf node_modules package-lock.json
+git pull
 
 echo "Installing dependencies..."
-npm install --production --ignore-scripts
-
-echo "Installing build dependencies..."
-npm install esbuild
+npm ci
 
 echo "Building..."
 npm run build
 
-echo "Removing build dependencies..."
-npm prune --production
-
 echo "Restarting service..."
-systemctl restart plant-care || pm2 restart plant-care || true
+pm2 restart plant-care 2>/dev/null || systemctl restart plant-care 2>/dev/null || true
 
 echo "✅ Deploy complete!"
