@@ -1,0 +1,11 @@
+configuration:
+  session_password:
+    name: Session Password
+    description: >-
+      Password used to encrypt browser sessions. Leave empty to auto-generate one.
+      Must be at least 32 characters if set manually.
+  trefle_api_token:
+    name: Trefle API Token
+    description: >-
+      Optional Trefle API token for plant species search. 
+      Get one at https://trefle.io/

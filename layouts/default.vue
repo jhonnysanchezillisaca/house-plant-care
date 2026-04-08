@@ -38,6 +38,13 @@ async function handleLogout() {
               >
                 Plants
               </NuxtLink>
+              <NuxtLink 
+                to="/settings" 
+                class="text-gray-600 hover:text-gray-900 px-3 py-2"
+                active-class="text-green-600"
+              >
+                Settings
+              </NuxtLink>
             </div>
           </div>
           
@@ -75,6 +82,13 @@ async function handleLogout() {
             active-class="bg-gray-100 text-green-600"
           >
             Plants
+          </NuxtLink>
+          <NuxtLink 
+            to="/settings" 
+            class="block px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-md"
+            active-class="bg-gray-100 text-green-600"
+          >
+            Settings
           </NuxtLink>
         </div>
       </div>

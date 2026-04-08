@@ -1,5 +1,6 @@
 import { useSession } from 'h3'
 import { getUserById } from './auth'
+import { validateApiToken } from './api-token'
 import type { User } from 'server/db/schema'
 
 declare module 'h3' {
@@ -15,6 +16,19 @@ interface SessionData {
 }
 
 export async function getSessionUser(event: any): Promise<Omit<User, 'passwordHash'> | null> {
+  const authHeader = getHeader(event, 'authorization')
+  if (authHeader?.startsWith('Bearer ')) {
+    const token = authHeader.slice(7)
+    const tokenInfo = await validateApiToken(token)
+    if (!tokenInfo) return null
+
+    const user = await getUserById(tokenInfo.userId)
+    if (!user) return null
+
+    const { passwordHash: _, ...safeUser } = user
+    return safeUser
+  }
+
   const session = await useSession(event, { password: SESSION_PASSWORD })
   
   const userId = (session.data as SessionData)?.userId

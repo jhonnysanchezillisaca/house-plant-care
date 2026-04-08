@@ -1,0 +1,22 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "House Plant Care",
+        "description": "Connect to your House Plant Care application. You need the URL and an API token (create one in Settings → API Tokens).",
+        "data": {
+          "url": "URL (e.g., http://homeassistant.local:3000)",
+          "api_token": "API Token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "invalid_auth": "Invalid API token",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "This integration is already configured"
+    }
+  }
+}

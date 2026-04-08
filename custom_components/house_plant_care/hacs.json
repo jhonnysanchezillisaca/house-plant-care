@@ -1,0 +1,8 @@
+{
+  "name": "House Plant Care",
+  "homeassistant": "2024.1.0",
+  "render_readme": true,
+  "content_in_root": false,
+  "zip_release": true,
+  "filename": "house_plant_care.zip"
+}

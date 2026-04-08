@@ -7,6 +7,7 @@ export type Plant = InferSelectModel<typeof plants>
 export type CareType = InferSelectModel<typeof careTypes>
 export type PlantCare = InferSelectModel<typeof plantCare>
 export type CareLog = InferSelectModel<typeof careLogs>
+export type ApiToken = InferSelectModel<typeof apiTokens>
 
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -56,8 +57,18 @@ export const careLogs = sqliteTable('care_logs', {
   notes: text('notes')
 })
 
+export const apiTokens = sqliteTable('api_tokens', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  name: text('name').notNull(),
+  tokenHash: text('token_hash').notNull(),
+  lastUsedAt: integer('last_used_at', { mode: 'timestamp' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
+})
+
 export const usersRelations = relations(users, ({ many }) => ({
-  careLogs: many(careLogs)
+  careLogs: many(careLogs),
+  apiTokens: many(apiTokens)
 }))
 
 export const roomsRelations = relations(rooms, ({ many }) => ({
@@ -100,6 +111,13 @@ export const careLogsRelations = relations(careLogs, ({ one }) => ({
   }),
   user: one(users, {
     fields: [careLogs.userId],
+    references: [users.id]
+  })
+}))
+
+export const apiTokensRelations = relations(apiTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [apiTokens.userId],
     references: [users.id]
   })
 }))

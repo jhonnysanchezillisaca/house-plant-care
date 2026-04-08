@@ -1,0 +1,14 @@
+log_care:
+  name: Log plant care
+  description: Log a care activity for a plant in House Plant Care.
+  target:
+    entity:
+      integration: house_plant_care
+      domain: button
+  fields:
+    notes:
+      name: Notes
+      description: Optional notes about the care activity
+      example: "Watered with filtered water"
+      selector:
+        text:
