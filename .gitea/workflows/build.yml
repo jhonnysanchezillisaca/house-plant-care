@@ -31,8 +31,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ gitea.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: jhonny
+          password: ${{ secrets.ACTION_REGISTRY_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v5
