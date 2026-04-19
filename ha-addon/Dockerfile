@@ -1,25 +1,22 @@
-ARG BUILD_FROM
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-nodejs:latest
 FROM $BUILD_FROM
 
-RUN apk add --no-cache nodejs npm python3 make g++
-
+# Set working directory
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+# Copy dependency files
+COPY package*.json ./
+
+# Install dependencies (using clean-install for production)
 RUN npm ci
 
+# Copy the rest of your Nuxt code
 COPY . .
+
+# Build the Nuxt app (Nitro server)
 RUN npm run build
 
-RUN cd .output/server && npm init -y > /dev/null 2>&1 && npm install better-sqlite3 && cd ../..
-
-RUN mkdir -p /app/data /app/public/uploads
-
-ENV NODE_ENV=production
-ENV NUXT_HOST=0.0.0.0
-ENV NUXT_PORT=3000
-
-COPY ha-addon/run.sh /run.sh
-RUN chmod a+x /run.sh
-
-CMD [ "/run.sh" ]
+# HA Add-ons use S6-overlay, but for a simple Node app, 
+# you can just tell it how to start.
+# Note: Ensure your Nuxt app looks at /data for the SQLite file!
+CMD [ "node", ".output/server/index.mjs" ]
