@@ -2,19 +2,21 @@ import Database from 'better-sqlite3'
 import { join } from 'path'
 import { existsSync, mkdirSync } from 'fs'
 import { defaultCareTypes } from '../db/schema'
+import { getDataDir } from '../db'
 
 export default defineNitroPlugin(() => {
-  const dbPath = join(process.cwd(), 'data', 'db.sqlite')
-  const uploadsPath = join(process.cwd(), 'public', 'uploads')
+  const dataDir = getDataDir()
+  const uploadDir = process.env.UPLOAD_DIR || join(process.cwd(), 'public', 'uploads')
   
-  if (!existsSync(join(process.cwd(), 'data'))) {
-    mkdirSync(join(process.cwd(), 'data'), { recursive: true })
+  if (!existsSync(dataDir)) {
+    mkdirSync(dataDir, { recursive: true })
   }
   
-  if (!existsSync(uploadsPath)) {
-    mkdirSync(uploadsPath, { recursive: true })
+  if (!existsSync(uploadDir)) {
+    mkdirSync(uploadDir, { recursive: true })
   }
   
+  const dbPath = join(dataDir, 'db.sqlite')
   const sqlite = new Database(dbPath)
   
   sqlite.exec(`

@@ -41,7 +41,7 @@ jobs:
           file: ./ha-addon/Dockerfile
           push: true
           build-args: |
-            BUILD_FROM=ghcr.io/home-assistant/amd64-base-nodejs:latest
+            BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max

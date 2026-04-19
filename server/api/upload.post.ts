@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
     })
   }
   
-  const uploadDir = join(process.cwd(), 'public', 'uploads')
+  const uploadDir = process.env.UPLOAD_DIR || join(process.cwd(), 'public', 'uploads')
   
   if (!existsSync(uploadDir)) {
     await mkdir(uploadDir, { recursive: true })

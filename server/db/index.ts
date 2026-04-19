@@ -6,10 +6,14 @@ import { join } from 'path'
 
 let _db: ReturnType<typeof drizzle> | null = null
 
+export function getDataDir(): string {
+  return process.env.DATA_DIR || join(process.cwd(), 'data')
+}
+
 export function useDb() {
   if (_db) return _db
   
-  const dbPath = join(process.cwd(), 'data', 'db.sqlite')
+  const dbPath = join(getDataDir(), 'db.sqlite')
   const sqlite = new Database(dbPath)
   _db = drizzle(sqlite, { schema })
   
