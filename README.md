@@ -222,149 +222,33 @@ tar -czf plant-care-backup.tar.gz data/ public/uploads/
 
 ## Home Assistant Integration
 
-House Plant Care integrates with Home Assistant in two ways: as an **Add-on** for sidebar access, and as a **Custom Integration** for native sensors, buttons, and automations.
+House Plant Care integrates with Home Assistant as an **Add-on** (sidebar UI with Ingress) and a **Custom Integration** (native sensors, buttons, and automations).
 
-### Option A: Home Assistant Add-on (Sidebar Access)
+See **[docs/HOME_ASSISTANT.md](docs/HOME_ASSISTANT.md)** for complete setup instructions including:
 
-The add-on runs House Plant Care inside Home Assistant with Ingress support (embedded in the HA sidebar, no separate login needed).
+- Add-on installation via pre-built container image from Gitea registry
+- Local build & push with `./scripts/build-addon.sh`
+- CI/CD pipeline configuration
+- Custom integration setup for native HA entities
+- Self-signed certificate trust configuration
+- Example automations
 
-**Install locally (for testing):**
+### Quick Start: Custom Integration
 
-1. Copy the `ha-addon/` folder to your HA instance's `/addons/` directory (via Samba or SSH)
+1. Create an API token: open House Plant Care → **Settings → API Tokens** → **Create Token**
+2. Copy `custom_components/house_plant_care/` to your HA `/config/custom_components/` directory
    ```bash
-   scp -r ha-addon/ homeassistant:/addons/house_plant_care/
-   ```
-2. In HA, go to **Settings → Apps → App Store** (bottom right)
-3. Click the three-dot menu → **Check for updates**
-4. Find **House Plant Care** under "Local apps" and install it
-5. Configure the add-on options (session password is auto-generated if left empty)
-6. Start the add-on
-7. Access via the **Plant Care** link in the HA sidebar
-
-**Configure via add-on options:**
-
-| Option | Required | Description |
-|--------|----------|-------------|
-| `session_password` | No | Auto-generated if empty. Set a custom password (min 32 chars) if you prefer. |
-| `trefle_api_token` | No | Token from [trefle.io](https://trefle.io/) for plant species lookup |
-
-### Option B: Custom Integration (Sensors, Buttons, Automations)
-
-The custom integration creates native HA entities for your plants and exposes a `log_care` service for automations.
-
-**Install:**
-
-1. Copy `custom_components/house_plant_care/` to your HA config directory
-   ```bash
-   # For HA OS / Supervised:
    scp -r custom_components/house_plant_care/ homeassistant:/config/custom_components/
-
-   # Or use the included script:
-   ./scripts/test-ha-integration.sh /config
    ```
-2. Restart Home Assistant
-3. Go to **Settings → Devices & Services → Add Integration**
-4. Search for **House Plant Care**
-5. Enter your app URL and an API token
+3. Restart Home Assistant
+4. **Settings → Devices & Services → Add Integration** → search "House Plant Care"
+5. Enter your app URL and the API token
 
-**Before adding the integration, create an API token:**
+### Running Both Together
 
-1. Open House Plant Care in your browser
-2. Go to **Settings → API Tokens**
-3. Click **Create Token**, give it a name (e.g., "Home Assistant"), and copy the token
-4. You'll only see the full token once — save it somewhere secure
-
-**Entities created per plant per care schedule:**
-
-| Entity | Example | Description |
-|--------|---------|-------------|
-| Overdue sensor | `sensor.monstera_water_overdue` | Days overdue (0 = not overdue) |
-| Last performed sensor | `sensor.monstera_water_last_performed` | Timestamp of last care activity |
-| Next due sensor | `sensor.monstera_water_next_due` | Calculated next due date |
-| Log button | `button.log_water_for_monstera` | Press to log that care was performed |
-
-**Service exposed:**
-
-```yaml
-# Log care via automation
-service: house_plant_care.log_care
-data:
-  plant_id: 1
-  care_type_id: 1
-  notes: "Watered with filtered water"
-```
-
-### Example Automations
-
-**Notify when care is overdue:**
-
-```yaml
-automation:
-  - alias: "Plant needs watering"
-    trigger:
-      - platform: numeric_state
-        entity_id: sensor.monstera_water_overdue
-        above: 0
-    action:
-      - service: notify.mobile_app
-        data:
-          title: "Plant Care Alert"
-          message: "Your Monstera is {{ trigger.to_state.state }} days overdue for watering!"
-```
-
-**Morning plant care summary:**
-
-```yaml
-automation:
-  - alias: "Morning plant summary"
-    trigger:
-      - platform: time
-        at: "08:00:00"
-    action:
-      - service: notify.mobile_app
-        data:
-          title: "Plant Care Summary"
-          message: >
-            {% set overdue = states.sensor
-              | selectattr('entity_id', 'search', '_overdue')
-              | map(attribute='state')
-              | map('int', 0)
-              | select('>', 0)
-              | list %}
-            {% if overdue | length > 0 %}
-              {{ overdue | length }} plant(s) need attention!
-            {% else %}
-              All plants are happy!
-            {% endif %}
-```
-
-**Log care from HA dashboard:**
-
-Add a button card to your Lovelace dashboard that calls the built-in `button.log_water_for_monstera` entity.
-
-### Running Both Together (Recommended)
-
-For the best experience, run **both** the Add-on and the Custom Integration:
-
-- **Add-on** gives you the full web UI in the HA sidebar (Ingress)
+- **Add-on** gives you the full web UI in the HA sidebar
 - **Custom Integration** gives you native sensors, buttons, and automation triggers
-
-When using both, point the integration URL to the add-on:
-
-| Integration Setting | Value |
-|---------------------|-------|
-| URL | `http://a0d7b954-house-plant-care:3000` (HA internal add-on URL) or `http://localhost:3000` |
-| API Token | Token created in Settings → API Tokens |
-
-### Testing the API Token Auth
-
-```bash
-# Start the app
-npx nuxi dev
-
-# Create a token in the browser (Settings → API Tokens), then:
-./scripts/test-api-token.sh http://localhost:3000 hpc_YOUR_TOKEN_HERE
-```
+- Point the integration URL to `http://a0d7b954-house-plant-care:3000` (add-on internal URL)
 
 ## Care Types
 
