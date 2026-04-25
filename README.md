@@ -25,10 +25,10 @@ A self-hosted application to manage the care of your house plants.
 
 ```bash
 # Download and run setup script
-curl -fsSL https://raw.githubusercontent.com/YOUR_REPO/main/scripts/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jhonnysanchezillisaca/house-plant-care/main/scripts/setup.sh | bash
 
 # Or manually:
-git clone https://github.com/YOUR_REPO.git /opt/plant-care
+git clone https://github.com/jhonnysanchezillisaca/house-plant-care.git /opt/plant-care
 cd /opt/plant-care
 ./scripts/setup.sh
 ```
@@ -226,7 +226,7 @@ House Plant Care integrates with Home Assistant as an **Add-on** (sidebar UI wit
 
 See **[docs/HOME_ASSISTANT.md](docs/HOME_ASSISTANT.md)** for complete setup instructions including:
 
-- Add-on installation via pre-built container image from Gitea registry
+- Add-on installation via pre-built container image from GitHub Container Registry
 - Local build & push with `./scripts/build-addon.sh`
 - CI/CD pipeline configuration
 - Custom integration setup for native HA entities

@@ -19,4 +19,4 @@ options:
 schema:
   session_password: password
   trefle_api_token: password?
-image: "gitea.home.arpa/jhonny/house-plant-care-{arch}"
+image: "ghcr.io/jhonnysanchezillisaca/house-plant-care-{arch}"

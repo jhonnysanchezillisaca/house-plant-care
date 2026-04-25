@@ -11,8 +11,8 @@ For the best experience, install **both**.
 
 ```
 ┌─────────────────┐     push      ┌──────────────────────────────┐
-│   Your dev machine │ ──────────► │  Gitea Container Registry    │
-│   or act_runner    │             │  gitea.home.arpa              │
+│   GitHub Actions │ ──────────►  │  GitHub Container Registry    │
+│   (CI/CD)        │               │  ghcr.io                      │
 └─────────────────┘               └──────────────┬───────────────┘
                                                   │ pull
                                                   ▼
@@ -23,67 +23,9 @@ For the best experience, install **both**.
                                         └─────────────────────┘
 ```
 
-- The add-on image is built from `ha-addon/Dockerfile` and pushed to Gitea's container registry
+- The add-on image is built from `ha-addon/Dockerfile` and pushed to GitHub Container Registry (`ghcr.io`)
 - HA Supervisor pulls the image when installing or updating the add-on
 - The custom integration communicates with the app via its REST API
-
-## Prerequisites
-
-### Gitea Container Registry
-
-Your Gitea instance at `gitea.home.arpa` must have the container registry enabled (it is by default in Gitea 1.17+).
-
-### Self-signed Certificate Trust
-
-Your Gitea instance is behind a Caddy reverse proxy using `tls internal` (self-signed certificate). Docker and Home Assistant need to trust this certificate.
-
-**Extract Caddy's root CA certificate** (on the machine running Caddy):
-
-```bash
-# Caddy stores its internal CA here:
-cat ~/.local/share/caddy/pki/roots/default/root.crt
-```
-
-Copy this certificate to:
-
-**Docker (for building/pushing images)** — on any machine that runs `docker push`:
-
-```bash
-# Linux:
-sudo mkdir -p /etc/docker/certs.d/gitea.home.arpa
-sudo cp root.crt /etc/docker/certs.d/gitea.home.arpa/ca.crt
-sudo systemctl restart docker
-
-# macOS:
-sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain root.crt
-# Then restart Docker Desktop
-```
-
-**Home Assistant OS** — for pulling add-on images:
-
-```bash
-# Via HA SSH add-on:
-mkdir -p /usr/local/share/ca-certificates
-cp root.crt /usr/local/share/ca-certificates/caddy-root.crt
-update-ca-certificates
-# Then restart HA
-```
-
-### Gitea Access Token
-
-Create a Personal Access Token in Gitea with these scopes:
-
-- **package:write** — push container images to the registry, clean up old versions
-- **repository:write** — auto-sync add-on config to `ha-addon-repo`
-
-Go to Gitea → Settings → Applications → Generate Token, then add it as a repository secret:
-
-1. Go to the `house-plant-care` repo → Settings → Actions → Secrets
-2. Add a secret named `GITEA_TOKEN` with the token value
-
-### Gitea Actions Runner (for CI/CD)
-
-If you want automatic builds on push to `main`, you need an `act_runner` registered with your Gitea instance. See [Gitea's Act Runner docs](https://docs.gitea.com/usage/actions/act-runner) for setup.
 
 ## Option A: Home Assistant Add-on
 
@@ -91,7 +33,7 @@ The add-on runs House Plant Care inside Home Assistant with Ingress support — 
 
 ### One-time Setup: Add-on Repository
 
-HA needs a separate Git repository to discover add-ons. Create a repo on Gitea called `jhonny/ha-addon-repo` with this structure:
+You need a separate GitHub repository that HA uses to discover add-ons. Create a repo called `jhonnysanchezillisaca/ha-addon-repo` with this structure:
 
 ```
 ha-addon-repo/
@@ -111,26 +53,25 @@ ha-addon-repo/
     "name": "House Plant Care",
     "slug": "house_plant_care",
     "description": "Track and manage your house plant care schedules with alerts and overdue notifications",
-    "url": "https://gitea.home.arpa/jhonny/ha-addon-repo",
-    "image": "gitea.home.arpa/jhonny/house-plant-care-{arch}"
+    "url": "https://github.com/jhonnysanchezillisaca/ha-addon-repo",
+    "image": "ghcr.io/jhonnysanchezillisaca/house-plant-care-{arch}"
   }
 ]
 ```
 
-The CI pipeline (`.gitea/workflows/build.yml`) auto-syncs the add-on config files from this repo to `ha-addon-repo` on every push to `main`, so you only need to set up the repo structure once manually.
+The CI pipeline (`.github/workflows/build.yml`) auto-syncs the add-on config files from this repo to `ha-addon-repo` on every push to `main`, so you only need to set up the repo structure once manually.
 
 ### Install via HA Add-on Store
 
-1. Make sure the Caddy CA cert is trusted by HA (see [Self-signed Certificate Trust](#self-signed-certificate-trust))
-2. In HA, go to **Settings → Add-ons → Add-on Store**
-3. Click the three-dot menu (top right) → **Repositories**
-4. Add: `https://gitea.home.arpa/jhonny/ha-addon-repo`
-5. Find **House Plant Care** under the repository → click **Install**
-6. Configure add-on options:
+1. In HA, go to **Settings → Add-ons → Add-on Store**
+2. Click the three-dot menu (top right) → **Repositories**
+3. Add: `https://github.com/jhonnysanchezillisaca/ha-addon-repo`
+4. Find **House Plant Care** under the repository → click **Install**
+5. Configure add-on options:
    - **Session password** — leave empty to auto-generate, or set your own (min 32 characters)
    - **Trefle API token** — optional, for plant species lookup from [trefle.io](https://trefle.io/)
-7. Click **Start**
-8. Access via **Plant Care** in the HA sidebar
+6. Click **Start**
+7. Access via **Plant Care** in the HA sidebar
 
 ### Build and Push from Your Local Machine
 
@@ -143,10 +84,7 @@ Use the build script for manual builds:
 # Build only, don't push
 ./scripts/build-addon.sh --no-push
 
-# Build, push, and clean up old package versions
-./scripts/build-addon.sh --cleanup --token YOUR_GITEA_TOKEN
-
-# Build with a specific tag
+# Build and push with a specific tag
 ./scripts/build-addon.sh --tag v1.2.0
 
 # Use a different registry
@@ -162,17 +100,14 @@ After pushing, update the add-on in HA:
 
 ### CI/CD Pipeline
 
-The `.gitea/workflows/build.yml` pipeline runs automatically on every push to `main`:
+The `.github/workflows/build.yml` pipeline runs automatically on every push to `main`:
 
-1. Builds the Docker image using `ha-addon/Dockerfile` with the full project as context
-2. Tags it as `latest` only — no versioned tags
-3. Pushes to `gitea.home.arpa/jhonny/house-plant-care:latest`
-4. Deletes all previous package versions from Gitea (keeps only the latest)
-5. Auto-syncs add-on config files (`config.yaml`, `DOCS.md`, `translations/`) to the `ha-addon-repo`
+1. Builds the Docker image using `ha-addon/Dockerfile`
+2. Extracts metadata for tags (latest for main, versioned for tags)
+3. Pushes to `ghcr.io/jhonnysanchezillisaca/house-plant-care`
+4. Auto-syncs add-on config files (`config.yaml`, `DOCS.md`, `translations/`) to the `ha-addon-repo`
 
-**Required secret:** `GITEA_TOKEN` (see [Gitea Access Token](#gitea-access-token))
-
-**Required runner label:** The pipeline uses `runs-on: ubuntu-latest` — adjust this to match your act_runner's label if different.
+**Required secret:** `ADDON_REPO_PAT` — a GitHub Personal Access Token with `repo` scope, added as a repository secret in Settings → Secrets and variables → Actions.
 
 ## Option B: Custom Integration
 
@@ -292,18 +227,6 @@ automation:
 Add a button card to your Lovelace dashboard that calls the built-in `button.log_water_for_monstera` entity.
 
 ## Troubleshooting
-
-### Docker push fails with TLS error
-
-```
-error: failed to solve: failed to push xxx: tls: failed to verify certificate
-```
-
-The Caddy self-signed certificate isn't trusted by Docker. See [Self-signed Certificate Trust](#self-signed-certificate-trust) for adding the CA cert.
-
-### HA can't pull the add-on image
-
-If HA shows an error installing the add-on (certificate verification failure), the Caddy CA cert hasn't been added to HA's trust store. See [Self-signed Certificate Trust](#self-signed-certificate-trust).
 
 ### Integration won't connect
 

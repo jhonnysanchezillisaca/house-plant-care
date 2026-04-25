@@ -1,0 +1,90 @@
+name: Build and Push HA Add-on
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./ha-addon/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
+
+  sync-addon-repo:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout main repo
+        uses: actions/checkout@v4
+
+      - name: Checkout add-on repository
+        uses: actions/checkout@v4
+        with:
+          repository: jhonnysanchezillisaca/ha-addon-repo
+          token: ${{ secrets.ADDON_REPO_PAT }}
+          path: ha-addon-repo
+
+      - name: Sync add-on config
+        run: |
+          mkdir -p ha-addon-repo/house_plant_care/translations
+          cp ha-addon/config.yaml ha-addon-repo/house_plant_care/config.yaml
+          cp ha-addon/DOCS.md ha-addon-repo/house_plant_care/DOCS.md
+          cp -r ha-addon/translations/* ha-addon-repo/house_plant_care/translations/
+
+      - name: Commit and push
+        working-directory: ha-addon-repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "auto-sync add-on config from house-plant-care"
+          git push
