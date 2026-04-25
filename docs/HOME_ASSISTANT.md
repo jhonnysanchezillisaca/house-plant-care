@@ -48,15 +48,11 @@ ha-addon-repo/
 **`repository.json`:**
 
 ```json
-[
-  {
-    "name": "House Plant Care",
-    "slug": "house_plant_care",
-    "description": "Track and manage your house plant care schedules with alerts and overdue notifications",
-    "url": "https://github.com/jhonnysanchezillisaca/ha-addon-repo",
-    "image": "ghcr.io/jhonnysanchezillisaca/house-plant-care-{arch}"
-  }
-]
+{
+  "name": "House Plant Care",
+  "url": "https://github.com/jhonnysanchezillisaca/ha-addon-repo",
+  "maintainer": "jhonnysanchezillisaca"
+}
 ```
 
 The CI pipeline (`.github/workflows/build.yml`) auto-syncs the add-on config files from this repo to `ha-addon-repo` on every push to `main`, so you only need to set up the repo structure once manually.
