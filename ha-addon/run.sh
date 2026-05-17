@@ -12,7 +12,7 @@ export TREFLE_API_TOKEN="$TREFLE_API_TOKEN"
 export HA_ADDON=true
 export DATA_DIR=/data
 export UPLOAD_DIR=/data/uploads
-export NUXT_APP_BASE_URL="$(bashio::addon ingress_entry)/"
+export NUXT_APP_BASE_URL="$(bashio::addon.ingress_entry)/"
 
 mkdir -p /data/uploads
 
