@@ -4,11 +4,6 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   ssr: false,
   devtools: { enabled: true },
-  router: {
-    options: {
-      hashMode: true
-    }
-  },
   vite: {
     plugins: [tailwindcss()]
   },
@@ -31,9 +26,6 @@ export default defineNuxtConfig({
     manifest: false
   },
   runtimeConfig: {
-    trefleApiToken: process.env.TREFLE_API_TOKEN,
-    app: {
-      baseURL: process.env.NUXT_APP_BASE_URL || '/'
-    }
+    trefleApiToken: process.env.TREFLE_API_TOKEN
   }
 })

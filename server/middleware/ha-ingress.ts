@@ -17,14 +17,6 @@ interface SessionData {
 export default defineEventHandler(async (event) => {
   if (!HA_ADDON) return
 
-  const requestHost = getRequestHeader(event, 'host') || ''
-  const requestProto = getRequestHeader(event, 'x-forwarded-proto') || 'http'
-
-  setResponseHeaders(event, {
-    'X-Frame-Options': 'ALLOWALL',
-    'Content-Security-Policy': `frame-ancestors 'self' ${requestProto}://${requestHost};`
-  })
-
   const session = await useSession(event, {
     password: SESSION_PASSWORD,
     cookie: {
