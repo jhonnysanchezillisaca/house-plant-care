@@ -10,8 +10,6 @@ const HA_DEFAULT_NAME = 'Home Assistant'
 
 const SESSION_PASSWORD = process.env.NUXT_SESSION_PASSWORD || 'change-me-to-a-secure-secret-password-min-32-chars'
 
-const INGRESS_PATH = process.env.NUXT_APP_BASE_URL || '/'
-
 interface SessionData {
   userId: number
 }
@@ -19,7 +17,6 @@ interface SessionData {
 export default defineEventHandler(async (event) => {
   if (!HA_ADDON) return
 
-  const ingressPath = INGRESS_PATH.replace(/\/$/, '')
   const requestHost = getRequestHeader(event, 'host') || ''
   const requestProto = getRequestHeader(event, 'x-forwarded-proto') || 'http'
 
@@ -33,7 +30,7 @@ export default defineEventHandler(async (event) => {
     cookie: {
       secure: false,
       httpOnly: true,
-      path: ingressPath || '/'
+      sameSite: 'lax'
     }
   })
   const userId = (session.data as SessionData)?.userId
