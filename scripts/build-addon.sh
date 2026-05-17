@@ -7,7 +7,7 @@ set -e
 #
 # Options:
 #   --tag TAG        Image tag (default: latest)
-#   --registry URL   Full image registry path (default: ghcr.io/jhonnysanchezillisaca/house-plant-care)
+#   --registry URL   Full image registry path (default: ghcr.io/jhonnysanchezillisaca/house-plant-care-amd64)
 #   --token TOKEN    GitHub token for registry login
 #   --no-push        Build only, don't push to registry
 #   -h, --help       Show this help message
@@ -19,7 +19,7 @@ set -e
 #   ./scripts/build-addon.sh --tag v1.2.0                    # Build and push a specific tag
 
 TAG="latest"
-REGISTRY="ghcr.io/jhonnysanchezillisaca/house-plant-care"
+REGISTRY="ghcr.io/jhonnysanchezillisaca/house-plant-care-amd64-amd64"
 TOKEN=""
 NO_PUSH=false
 
@@ -36,7 +36,7 @@ while [[ "$#" -gt 0 ]]; do
       echo ""
       echo "Options:"
       echo "  --tag TAG        Image tag (default: latest)"
-      echo "  --registry URL   Full image registry path (default: ghcr.io/jhonnysanchezillisaca/house-plant-care)"
+      echo "  --registry URL   Full image registry path (default: ghcr.io/jhonnysanchezillisaca/house-plant-care-amd64)"
       echo "  --token TOKEN    GitHub token for registry login"
       echo "  --no-push        Build only, don't push to registry"
       exit 0

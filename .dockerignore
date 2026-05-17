@@ -6,3 +6,14 @@ data
 .env
 .env.*
 !.env.example
+.git
+.gitignore
+.github
+custom_components
+scripts
+docs
+README.md
+LICENSE
+*.md
+pm2.config.js
+house-plant.db

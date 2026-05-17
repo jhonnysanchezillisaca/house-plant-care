@@ -22,8 +22,11 @@ RUN npm run build
 
 # Nuxt/Nitro listens on 3000 by default, HA expects it to be available
 ENV HOST=0.0.0.0
-ENV PORT=8099
+ENV PORT=3000
 
-# Start the application
-# Note: Ensure your code points the SQLite db to /data/house-plant.db
-CMD [ "node", ".output/server/index.mjs" ]
+# Ensure run.sh is executable
+RUN chmod +x /app/ha-addon/run.sh
+
+# Start the application via the HA add-on run script
+# This reads HA options and sets up the environment
+CMD [ "/app/ha-addon/run.sh" ]
