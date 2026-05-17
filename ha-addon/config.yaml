@@ -1,6 +1,6 @@
 name: "House Plant Care"
 description: "Track and manage your house plant care schedules with alerts and overdue notifications"
-version: "1.0.0"
+version: "1.1.0"
 slug: "house_plant_care"
 init: false
 arch:
