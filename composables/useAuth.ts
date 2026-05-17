@@ -1,5 +1,3 @@
-import type { Ref } from 'vue'
-
 interface User {
   id: number
   email: string
@@ -8,57 +6,59 @@ interface User {
 }
 
 export const useAuth = () => {
-  const user: Ref<User | null> = useState('user', () => null)
+  const user = useState<User | null>('user', () => null)
   const isLoggedIn = computed(() => !!user.value)
-  
+  const loading = ref(false)
+
   async function fetchUser() {
     try {
-      const { data } = await useFetch('/api/user')
-      user.value = data.value as User | null
-      return data.value
+      const data = await $fetch<User>('/api/user')
+      user.value = data
+      return data
     } catch {
       user.value = null
       return null
     }
   }
-  
+
   async function login(email: string, password: string) {
-    const { data, error } = await useFetch('/api/auth/login', {
-      method: 'POST',
-      body: { email, password }
-    })
-    
-    if (error.value) {
-      throw new Error(error.value.data?.message || 'Login failed')
+    loading.value = true
+    try {
+      const data = await $fetch<{ user: User }>('/api/auth/login', {
+        method: 'POST',
+        body: { email, password }
+      })
+      user.value = data.user
+      return data
+    } finally {
+      loading.value = false
     }
-    
-    user.value = data.value?.user as User
-    return data.value
   }
-  
+
   async function signup(email: string, password: string, name: string) {
-    const { data, error } = await useFetch('/api/auth/signup', {
-      method: 'POST',
-      body: { email, password, name }
-    })
-    
-    if (error.value) {
-      throw new Error(error.value.data?.message || 'Signup failed')
+    loading.value = true
+    try {
+      const data = await $fetch<{ user: User }>('/api/auth/signup', {
+        method: 'POST',
+        body: { email, password, name }
+      })
+      user.value = data.user
+      return data
+    } finally {
+      loading.value = false
     }
-    
-    user.value = data.value?.user as User
-    return data.value
   }
-  
+
   async function logout() {
-    await useFetch('/api/auth/logout', { method: 'POST' })
+    await $fetch('/api/auth/logout', { method: 'POST' })
     user.value = null
     await navigateTo('/login')
   }
-  
+
   return {
     user,
     isLoggedIn,
+    loading,
     fetchUser,
     login,
     signup,

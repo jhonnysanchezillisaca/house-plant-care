@@ -56,7 +56,7 @@ async function handleQuickLog() {
   quickLogLoading.value = true
   
   try {
-    await useFetch('/api/care-logs', {
+    await $fetch('/api/care-logs', {
       method: 'POST',
       body: {
         plantId: quickLogPlantId.value,

@@ -15,7 +15,7 @@ async function handleSubmit() {
   loading.value = true
   
   try {
-    const response = await useFetch('/api/rooms', {
+    await $fetch('/api/rooms', {
       method: 'POST',
       body: {
         name: name.value,
@@ -23,14 +23,9 @@ async function handleSubmit() {
       }
     })
     
-    if (response.error.value) {
-      error.value = response.error.value.data?.message || 'Failed to create room'
-      return
-    }
-    
     await router.push('/rooms')
-  } catch (e) {
-    error.value = 'An error occurred'
+  } catch (e: any) {
+    error.value = e.data?.message || 'An error occurred'
   } finally {
     loading.value = false
   }

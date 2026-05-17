@@ -31,7 +31,7 @@ async function handleSubmit() {
   loading.value = true
   
   try {
-    const response = await useFetch(`/api/rooms/${id.value}`, {
+    await $fetch(`/api/rooms/${id.value}`, {
       method: 'PUT',
       body: {
         name: name.value,
@@ -39,14 +39,9 @@ async function handleSubmit() {
       }
     })
     
-    if (response.error.value) {
-      error.value = response.error.value.data?.message || 'Failed to update room'
-      return
-    }
-    
     await router.push(`/rooms/${id.value}`)
-  } catch (e) {
-    error.value = 'An error occurred'
+  } catch (e: any) {
+    error.value = e.data?.message || 'An error occurred'
   } finally {
     loading.value = false
   }

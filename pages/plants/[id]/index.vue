@@ -75,7 +75,7 @@ async function handleSaveSchedule() {
   
   try {
     if (editingSchedule.value) {
-      await useFetch(`/api/care-schedules/${editingSchedule.value.id}`, {
+      await $fetch(`/api/care-schedules/${editingSchedule.value.id}`, {
         method: 'PUT',
         body: {
           careTypeId: selectedCareTypeId.value,
@@ -84,7 +84,7 @@ async function handleSaveSchedule() {
         }
       })
     } else {
-      await useFetch('/api/care-schedules', {
+      await $fetch('/api/care-schedules', {
         method: 'POST',
         body: {
           plantId: id.value,
@@ -108,7 +108,7 @@ async function deleteSchedule(scheduleId: number) {
   if (!confirm('Are you sure you want to delete this care schedule?')) return
   
   try {
-    await useFetch(`/api/care-schedules/${scheduleId}`, { method: 'DELETE' })
+    await $fetch(`/api/care-schedules/${scheduleId}`, { method: 'DELETE' })
     await refreshSchedules()
   } catch (e) {
     alert('Failed to delete schedule')
@@ -130,7 +130,7 @@ async function handleLogCare() {
   logLoading.value = true
   
   try {
-    await useFetch('/api/care-logs', {
+    await $fetch('/api/care-logs', {
       method: 'POST',
       body: {
         plantId: id.value,
@@ -152,7 +152,7 @@ async function deleteLog(logId: number) {
   if (!confirm('Delete this activity log?')) return
   
   try {
-    await useFetch(`/api/care-logs/${logId}`, { method: 'DELETE' })
+    await $fetch(`/api/care-logs/${logId}`, { method: 'DELETE' })
     await refreshLogs()
   } catch (e) {
     alert('Failed to delete log')
@@ -163,7 +163,7 @@ async function deletePlant() {
   if (!confirm('Are you sure you want to delete this plant?')) return
   
   try {
-    await useFetch(`/api/plants/${id.value}`, { method: 'DELETE' })
+    await $fetch(`/api/plants/${id.value}`, { method: 'DELETE' })
     await router.push('/plants')
   } catch (e) {
     alert('Failed to delete plant')

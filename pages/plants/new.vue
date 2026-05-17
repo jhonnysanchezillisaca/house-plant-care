@@ -42,12 +42,12 @@ watch(species, (newVal) => {
     searchingSpecies.value = true
     showSpeciesSearch.value = true
     try {
-      const { data } = await useFetch('/api/trefle/search', {
+      const data = await $fetch('/api/trefle/search', {
         query: { q: newVal }
       })
       
-      if (data.value?.data) {
-        speciesResults.value = data.value.data
+      if (data?.data) {
+        speciesResults.value = data.data
       }
     } catch (e) {
       console.error('Species search failed:', e)
@@ -109,7 +109,7 @@ async function handleSubmit() {
       }
     }
     
-    const response = await useFetch('/api/plants', {
+    const result = await $fetch('/api/plants', {
       method: 'POST',
       body: {
         name: name.value,
@@ -119,11 +119,6 @@ async function handleSubmit() {
         notes: notes.value || undefined
       }
     })
-    
-    if (response.error.value) {
-      error.value = response.error.value.data?.message || 'Failed to create plant'
-      return
-    }
     
     await router.push('/plants')
   } catch (e: any) {

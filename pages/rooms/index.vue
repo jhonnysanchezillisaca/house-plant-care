@@ -10,7 +10,7 @@ async function deleteRoom(id: number) {
   if (!confirm('Are you sure you want to delete this room?')) return
   
   try {
-    await useFetch(`/api/rooms/${id}`, { method: 'DELETE' })
+    await $fetch(`/api/rooms/${id}`, { method: 'DELETE' })
     await refresh()
   } catch (e) {
     alert('Failed to delete room')

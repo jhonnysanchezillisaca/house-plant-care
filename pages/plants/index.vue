@@ -27,7 +27,7 @@ async function deletePlant(id: number) {
   if (!confirm('Are you sure you want to delete this plant?')) return
   
   try {
-    await useFetch(`/api/plants/${id}`, { method: 'DELETE' })
+    await $fetch(`/api/plants/${id}`, { method: 'DELETE' })
     await refresh()
   } catch (e) {
     alert('Failed to delete plant')

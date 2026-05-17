@@ -1,9 +1,12 @@
 <script setup lang="ts">
-const user = await useFetch('/api/user')
+const { user, logout } = useAuth()
+
+if (!user.value) {
+  await useFetch('/api/user')
+}
 
 async function handleLogout() {
-  await $fetch('/api/auth/logout', { method: 'POST' })
-  await navigateTo('/login')
+  await logout()
 }
 </script>
 
@@ -48,8 +51,8 @@ async function handleLogout() {
             </div>
           </div>
           
-          <div v-if="user.data.value" class="flex items-center gap-4">
-            <span class="text-sm text-gray-600">{{ user.data.value.name }}</span>
+          <div v-if="user" class="flex items-center gap-4">
+            <span class="text-sm text-gray-600">{{ user.name }}</span>
             <button
               @click="handleLogout"
               class="text-sm text-gray-600 hover:text-gray-900"
