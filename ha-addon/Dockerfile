@@ -27,6 +27,5 @@ ENV PORT=3001
 # Ensure run.sh is executable
 RUN chmod +x /app/ha-addon/run.sh
 
-# Start the application via the HA add-on run script
-# This starts nginx on 3000 and Nuxt on 3001
+# Start nginx and Nuxt via run.sh
 CMD [ "/app/ha-addon/run.sh" ]
