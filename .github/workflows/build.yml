@@ -22,11 +22,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get add-on version
+      - name: Determine version
         id: version
         run: |
-          ADDON_VERSION=$(grep '^version:' ha-addon/config.yaml | sed 's/version: *//;s/"//g;s/'"'"'//g;s/ *//')
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            ADDON_VERSION="${{ github.ref_name }}"
+            ADDON_VERSION="${ADDON_VERSION#v}"
+            echo "Building from tag: $ADDON_VERSION"
+          else
+            ADDON_VERSION=$(grep '^version:' ha-addon/config.yaml | sed 's/version: *//;s/"//g;s/'"'"'//g;s/ *//')
+            echo "Building from branch (using config.yaml version): $ADDON_VERSION"
+          fi
           echo "version=$ADDON_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update config.yaml version (tag builds only)
+        if: github.ref_type == 'tag'
+        run: |
+          sed -i "s/^version: .*/version: \"${{ steps.version.outputs.version }}\"/" ha-addon/config.yaml
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -62,6 +74,22 @@ jobs:
       - name: Checkout main repo
         uses: actions/checkout@v4
 
+      - name: Determine version for sync
+        id: version
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            ADDON_VERSION="${{ github.ref_name }}"
+            ADDON_VERSION="${ADDON_VERSION#v}"
+          else
+            ADDON_VERSION=$(grep '^version:' ha-addon/config.yaml | sed 's/version: *//;s/"//g;s/'"'"'//g;s/ *//')
+          fi
+          echo "version=$ADDON_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update config.yaml version (tag builds only)
+        if: github.ref_type == 'tag'
+        run: |
+          sed -i "s/^version: .*/version: \"${{ steps.version.outputs.version }}\"/" ha-addon/config.yaml
+
       - name: Checkout add-on repository
         uses: actions/checkout@v4
         with:
@@ -82,5 +110,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet || git commit -m "auto-sync add-on config from house-plant-care"
+          git diff --cached --quiet || git commit -m "release ${{ steps.version.outputs.version }}: auto-sync add-on config"
           git push
