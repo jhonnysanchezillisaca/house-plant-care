@@ -3,7 +3,7 @@ ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
 FROM $BUILD_FROM
 
 # Install Node.js and NPM manually
-RUN apk add --no-cache nodejs npm
+RUN apk add --no-cache nodejs npm openssl
 
 # Set working directory
 WORKDIR /app
