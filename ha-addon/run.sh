@@ -17,7 +17,7 @@ export PORT=3001
 
 bashio::log.info "=== House Plant Care Add-on Starting ==="
 bashio::log.info "Starting nginx on port 3000..."
-nginx -g 'error_log stderr;' || bashio::log.error "nginx failed to start"
+nginx -c /app/ha-addon/nginx.conf -g 'error_log stderr;' || bashio::log.error "nginx failed to start"
 
 mkdir -p /data/uploads
 
