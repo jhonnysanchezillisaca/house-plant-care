@@ -31,6 +31,9 @@ export default defineNuxtConfig({
     manifest: false
   },
   runtimeConfig: {
-    trefleApiToken: process.env.TREFLE_API_TOKEN
+    trefleApiToken: process.env.TREFLE_API_TOKEN,
+    app: {
+      baseURL: process.env.NUXT_APP_BASE_URL || '/'
+    }
   }
 })

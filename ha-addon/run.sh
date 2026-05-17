@@ -13,6 +13,12 @@ export HA_ADDON=true
 export DATA_DIR=/data
 export UPLOAD_DIR=/data/uploads
 
+INGRESS_PATH="$(bashio::addon.ingress_entry)"
+
+if [ -n "$INGRESS_PATH" ]; then
+    export NUXT_APP_BASE_URL="${INGRESS_PATH}/"
+fi
+
 mkdir -p /data/uploads
 
 if [ ! -L /app/public/uploads ]; then
