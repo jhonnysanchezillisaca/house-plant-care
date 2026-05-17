@@ -24,7 +24,9 @@ jobs:
 
       - name: Get add-on version
         id: version
-        run: echo "version=$(grep '^version:' ha-addon/config.yaml | sed 's/version: *\"\{0,1\}\([^\"']*\)\"\{0,1\}/\1/')" >> "$GITHUB_OUTPUT"
+        run: |
+          ADDON_VERSION=$(grep '^version:' ha-addon/config.yaml | sed 's/version: *//;s/"//g;s/'"'"'//g;s/ *//')
+          echo "version=$ADDON_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
