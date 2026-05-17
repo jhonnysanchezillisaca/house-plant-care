@@ -2,6 +2,11 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss'],
+  router: {
+    options: {
+      hashMode: true
+    }
+  },
   nitro: {
     preset: 'node-server',
     externals: process.env.NODE_ENV === 'production' 
