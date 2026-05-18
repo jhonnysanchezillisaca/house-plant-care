@@ -10,11 +10,18 @@ const HA_DEFAULT_NAME = 'Home Assistant'
 
 const SESSION_PASSWORD = process.env.NUXT_SESSION_PASSWORD || 'change-me-to-a-secure-secret-password-min-32-chars'
 
+const INGRESS_HEADER = 'x-ingress-path'
+
 interface SessionData {
   userId: number
 }
 
 export default defineEventHandler(async (event) => {
+  const ingressPath = getRequestHeader(event, INGRESS_HEADER)
+  if (ingressPath) {
+    event.context.ingressPath = ingressPath.replace(/\/$/, '')
+  }
+
   if (!HA_ADDON) return
 
   const session = await useSession(event, {

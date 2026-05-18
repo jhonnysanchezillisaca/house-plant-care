@@ -2,11 +2,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  ssr: false,
   devtools: { enabled: true },
-  app: {
-    baseURL: process.env.NUXT_APP_BASE_URL || '/'
-  },
   router: {
     options: {
       hashMode: true
