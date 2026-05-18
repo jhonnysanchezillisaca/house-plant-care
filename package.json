@@ -16,7 +16,11 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "release": "bash scripts/bump-tag.sh",
+    "release:patch": "bash scripts/bump-tag.sh patch",
+    "release:minor": "bash scripts/bump-tag.sh minor",
+    "release:major": "bash scripts/bump-tag.sh major"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
