@@ -15,7 +15,15 @@ export UPLOAD_DIR=/data/uploads
 export HOST=127.0.0.1
 export PORT=3001
 
+INGRESS_PATH="$(bashio::addon.ingress_entry)"
+
+if [ -n "$INGRESS_PATH" ]; then
+    export NUXT_APP_BASE_URL="${INGRESS_PATH}/"
+fi
+
 bashio::log.info "=== House Plant Care Add-on Starting ==="
+bashio::log.info "Ingress path: ${INGRESS_PATH}"
+bashio::log.info "NUXT_APP_BASE_URL: ${NUXT_APP_BASE_URL}"
 
 bashio::log.info "Starting nginx on port 3000..."
 nginx -c /app/ha-addon/nginx.conf -g 'error_log stderr;' || bashio::log.error "nginx failed to start"
