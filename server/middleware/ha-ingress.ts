@@ -15,6 +15,11 @@ interface SessionData {
 }
 
 export default defineEventHandler(async (event) => {
+  const ingressPath = getRequestHeader(event, 'x-ingress-path')
+  if (ingressPath) {
+    event.context.ingressPath = ingressPath.replace(/\/$/, '')
+  }
+
   if (!HA_ADDON) return
 
   const session = await useSession(event, {
