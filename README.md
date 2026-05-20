@@ -117,6 +117,28 @@ npm install
 npm run dev
 ```
 
+## Releasing / Version Bumping
+
+Use the bump script to create version tags:
+
+```bash
+# Patch release (1.0.4 -> 1.0.5)
+npm run release
+# or: bash scripts/bump-tag.sh patch
+
+# Minor release (1.0.4 -> 1.1.0)
+npm run release:minor
+
+# Major release (1.0.4 -> 2.0.0)
+npm run release:major
+```
+
+This updates `package.json` and creates a local git tag. Push it with:
+
+```bash
+git push origin <tag>
+```
+
 ## Manual Installation
 
 ```bash

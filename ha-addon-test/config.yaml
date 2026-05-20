@@ -1,0 +1,14 @@
+name: "Plant Care Test"
+description: "Minimal Nuxt app with HA ingress"
+version: "0.5.1"
+slug: "plant_care_test"
+init: false
+arch:
+  - aarch64
+  - amd64
+startup: application
+ingress: true
+ingress_port: 8099
+ingress_stream: true
+panel_icon: mdi:flower
+panel_title: Plant Care Test

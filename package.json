@@ -26,6 +26,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.8.0",
+    "browser-image-compression": "^2.0.2",
     "drizzle-orm": "^0.45.1",
     "nuxt": "^3.16.0",
     "tailwindcss": "^4.3.0",

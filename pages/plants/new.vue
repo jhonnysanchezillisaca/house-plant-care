@@ -24,6 +24,7 @@ if (route.query.roomId) {
   roomId.value = parseInt(route.query.roomId as string)
 }
 
+const { compressing, compressImage } = useImageCompression()
 const photoPreview = ref('')
 const photoFile = ref<File | null>(null)
 
@@ -96,8 +97,9 @@ async function handleSubmit() {
   
   try {
     if (photoFile.value) {
+      const compressed = await compressImage(photoFile.value)
       const formData = new FormData()
-      formData.append('photo', photoFile.value)
+      formData.append('photo', compressed)
       
       const uploadResponse = await $fetch('/api/upload', {
         method: 'POST',
@@ -284,7 +286,7 @@ async function handleSubmit() {
           :disabled="loading"
           class="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:opacity-50"
         >
-          {{ loading ? 'Creating...' : 'Create Plant' }}
+          {{ compressing ? 'Compressing photo...' : loading ? 'Creating...' : 'Create Plant' }}
         </button>
         <NuxtLink 
           to="/plants" 

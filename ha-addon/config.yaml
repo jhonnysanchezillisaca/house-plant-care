@@ -14,10 +14,13 @@ panel_icon: mdi:flower
 panel_title: Plant Care
 map:
   - data:rw
+  - media:rw
 options:
   session_password: ""
   trefle_api_token: ""
+  upload_path: ""
 schema:
   session_password: password
   trefle_api_token: password?
+  upload_path: str?
 image: "ghcr.io/jhonnysanchezillisaca/house-plant-care-{arch}"

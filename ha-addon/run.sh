@@ -11,7 +11,17 @@ export NUXT_SESSION_PASSWORD="$SESSION_PASSWORD"
 export TREFLE_API_TOKEN="$TREFLE_API_TOKEN"
 export HA_ADDON=true
 export DATA_DIR=/data
-export UPLOAD_DIR=/data/uploads
+UPLOAD_PATH="$(bashio::config 'upload_path')"
+
+if [ -n "$UPLOAD_PATH" ] && [ -d "$UPLOAD_PATH" ]; then
+    export UPLOAD_DIR="$UPLOAD_PATH"
+    bashio::log.info "Using custom upload path: ${UPLOAD_PATH}"
+else
+    export UPLOAD_DIR=/data/uploads
+    if [ -n "$UPLOAD_PATH" ]; then
+        bashio::log.warning "Upload path '${UPLOAD_PATH}' not found, falling back to /data/uploads"
+    fi
+fi
 
 INGRESS_PATH="$(bashio::addon.ingress_entry)"
 
@@ -26,11 +36,11 @@ bashio::log.info "NUXT_APP_BASE_URL: ${NUXT_APP_BASE_URL}"
 bashio::log.info "Starting nginx on port 8099..."
 nginx -g 'error_log stderr;' || bashio::log.error "nginx failed to start"
 
-mkdir -p /data/uploads
+mkdir -p "$UPLOAD_DIR"
 
 if [ ! -L /app/public/uploads ]; then
     rm -rf /app/public/uploads 2>/dev/null
-    ln -s /data/uploads /app/public/uploads
+    ln -s "$UPLOAD_DIR" /app/public/uploads
 fi
 
 bashio::log.info "Starting Nuxt server on port 3000..."

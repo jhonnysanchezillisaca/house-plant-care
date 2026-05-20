@@ -19,6 +19,7 @@ const imageUrl = ref('')
 const error = ref('')
 const loading = ref(false)
 
+const { compressing, compressImage } = useImageCompression()
 const photoPreview = ref('')
 const photoFile = ref<File | null>(null)
 
@@ -111,8 +112,9 @@ async function handleSubmit() {
     let finalImageUrl = imageUrl.value
     
     if (photoFile.value) {
+      const compressed = await compressImage(photoFile.value)
       const formData = new FormData()
-      formData.append('photo', photoFile.value)
+      formData.append('photo', compressed)
       
       const uploadResponse = await $fetch('/api/upload', {
         method: 'POST',
@@ -303,7 +305,7 @@ async function handleSubmit() {
           :disabled="loading"
           class="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:opacity-50"
         >
-          {{ loading ? 'Saving...' : 'Save Changes' }}
+          {{ compressing ? 'Compressing photo...' : loading ? 'Saving...' : 'Save Changes' }}
         </button>
         <NuxtLink 
           :to="`/plants/${id}`" 

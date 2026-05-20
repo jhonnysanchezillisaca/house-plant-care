@@ -9,3 +9,10 @@ configuration:
     description: >-
       Optional Trefle API token for plant species search. 
       Get one at https://trefle.io/
+  upload_path:
+    name: Upload Storage Path
+    description: >-
+      Optional path to store uploaded plant photos. Use a NAS mount path 
+      (e.g., /media/truenas/plant-photos) for large storage. 
+      Leave empty to use the default add-on storage (/data/uploads). 
+      The directory must already exist on the Home Assistant host.
