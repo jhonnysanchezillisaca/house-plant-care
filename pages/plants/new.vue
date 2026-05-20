@@ -9,6 +9,7 @@ const route = useRoute()
 
 const { data: rooms } = await useFetch('/api/rooms')
 
+const assetUrl = useAssetUrl()
 const name = ref('')
 const roomId = ref<number | null>(null)
 const species = ref('')

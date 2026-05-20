@@ -4,6 +4,7 @@ definePageMeta({
   layout: 'default'
 })
 
+const assetUrl = useAssetUrl()
 const route = useRoute()
 const router = useRouter()
 const id = computed(() => parseInt(route.params.id as string))
@@ -88,7 +89,7 @@ async function deletePlant(plantId: number) {
         <NuxtLink :to="`/plants/${plant.id}`">
           <div v-if="plant.imageUrl" class="aspect-[4/3] bg-gray-100">
             <img 
-              :src="plant.imageUrl" 
+              :src="assetUrl(plant.imageUrl)" 
               :alt="plant.name"
               class="w-full h-full object-cover"
             />

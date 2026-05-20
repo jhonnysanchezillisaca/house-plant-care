@@ -4,6 +4,7 @@ definePageMeta({
   layout: 'default'
 })
 
+const assetUrl = useAssetUrl()
 const { data: user } = await useFetch('/api/user')
 const { data: rooms } = await useFetch('/api/rooms')
 const { data: plants } = await useFetch('/api/plants')
@@ -209,7 +210,7 @@ function getOverdueColor(days: number): string {
           class="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow"
         >
           <div v-if="plant.imageUrl" class="w-full aspect-square bg-gray-100 rounded-md mb-3 overflow-hidden">
-            <img :src="plant.imageUrl" :alt="plant.name" class="w-full h-full object-cover" />
+            <img :src="assetUrl(plant.imageUrl)" :alt="plant.name" class="w-full h-full object-cover" />
           </div>
           <div v-else class="w-full aspect-square bg-gray-100 rounded-md mb-3 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -4,6 +4,7 @@ definePageMeta({
   layout: 'default'
 })
 
+const assetUrl = useAssetUrl()
 const route = useRoute()
 const router = useRouter()
 const id = computed(() => parseInt(route.params.id as string))
@@ -210,7 +211,7 @@ function formatDate(date: string | Date): string {
     <div v-if="plant" class="bg-white rounded-lg shadow overflow-hidden">
       <div v-if="plant.imageUrl" class="aspect-video bg-gray-100">
         <img 
-          :src="plant.imageUrl" 
+          :src="assetUrl(plant.imageUrl)" 
           :alt="plant.name"
           class="w-full h-full object-cover"
         />

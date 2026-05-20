@@ -11,6 +11,7 @@ const id = computed(() => parseInt(route.params.id as string))
 const { data: plant, error: fetchError } = await useFetch(() => `/api/plants/${id.value}`)
 const { data: rooms } = await useFetch('/api/rooms')
 
+const assetUrl = useAssetUrl()
 const name = ref('')
 const roomId = ref<number | null>(null)
 const species = ref('')
@@ -262,7 +263,7 @@ async function handleSubmit() {
         </label>
         <div v-if="photoPreview || imageUrl" class="mb-2">
           <img 
-            :src="photoPreview || imageUrl" 
+            :src="photoPreview || assetUrl(imageUrl)" 
             alt="Preview" 
             class="w-32 h-32 object-cover rounded-md" 
           />
