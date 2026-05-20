@@ -43,7 +43,7 @@ fi
 # Update package.json version
 PACKAGE_JSON="package.json"
 if [ -f "$PACKAGE_JSON" ]; then
-  sed -i '' "\"s/\"version\": \"[0-9]*\.[0-9]*\.[0-9]*\"/\"version\": \"$NEW_VERSION\"/" "$PACKAGE_JSON"
+  sed -i '' "s/\"version\": \"[0-9]*\\.[0-9]*\\.[0-9]*\"/\"version\": \"$NEW_VERSION\"/" "$PACKAGE_JSON"
   echo "Updated package.json version to $NEW_VERSION"
 fi
 

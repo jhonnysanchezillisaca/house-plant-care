@@ -13,14 +13,33 @@ export HA_ADDON=true
 export DATA_DIR=/data
 UPLOAD_PATH="$(bashio::config 'upload_path')"
 
-if [ -n "$UPLOAD_PATH" ] && [ -d "$UPLOAD_PATH" ]; then
-    export UPLOAD_DIR="$UPLOAD_PATH"
-    bashio::log.info "Using custom upload path: ${UPLOAD_PATH}"
+# Log available storage mounts for debugging
+if [ -d /media ]; then
+    bashio::log.info "Available media mounts:"
+    ls -la /media 2>/dev/null || true
+fi
+if [ -d /mnt ]; then
+    bashio::log.info "Available mnt mounts:"
+    ls -la /mnt 2>/dev/null || true
+fi
+
+if [ -n "$UPLOAD_PATH" ]; then
+    # Try to create the directory if it doesn't exist
+    if [ ! -d "$UPLOAD_PATH" ]; then
+        bashio::log.info "Upload path '${UPLOAD_PATH}' does not exist, attempting to create it..."
+        mkdir -p "$UPLOAD_PATH" 2>/dev/null || true
+    fi
+
+    if [ -d "$UPLOAD_PATH" ] && [ -w "$UPLOAD_PATH" ]; then
+        export UPLOAD_DIR="$UPLOAD_PATH"
+        bashio::log.info "Using custom upload path: ${UPLOAD_PATH}"
+    else
+        export UPLOAD_DIR=/data/uploads
+        bashio::log.warning "Upload path '${UPLOAD_PATH}' not accessible, falling back to /data/uploads"
+        bashio::log.warning "Check the logs above for available mounts under /media or /mnt"
+    fi
 else
     export UPLOAD_DIR=/data/uploads
-    if [ -n "$UPLOAD_PATH" ]; then
-        bashio::log.warning "Upload path '${UPLOAD_PATH}' not found, falling back to /data/uploads"
-    fi
 fi
 
 INGRESS_PATH="$(bashio::addon.ingress_entry)"
@@ -38,10 +57,10 @@ nginx -g 'error_log stderr;' || bashio::log.error "nginx failed to start"
 
 mkdir -p "$UPLOAD_DIR"
 
-if [ ! -L /app/public/uploads ]; then
-    rm -rf /app/public/uploads 2>/dev/null
-    ln -s "$UPLOAD_DIR" /app/public/uploads
-fi
+# Always recreate the symlink to ensure it points to the correct upload dir
+rm -rf /app/public/uploads 2>/dev/null
+ln -s "$UPLOAD_DIR" /app/public/uploads
+bashio::log.info "Uploads symlink: /app/public/uploads -> $(readlink -f /app/public/uploads 2>/dev/null || readlink /app/public/uploads)"
 
 bashio::log.info "Starting Nuxt server on port 3000..."
 HOST=127.0.0.1
